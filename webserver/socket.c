@@ -1,8 +1,6 @@
-#ifndef __SOCKET_H__
 #define __SOCKET_H__
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <winsock2.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <netinet/in.h>
@@ -47,7 +45,7 @@ int creer_serveur(int port) {
 	struct sockaddr_in;
 	
 	bind(socket_server, socket_server&, 200);
-	listen();
+	listen(socket_server, 10); //nb de demandes en file d attente
 
 }
 
