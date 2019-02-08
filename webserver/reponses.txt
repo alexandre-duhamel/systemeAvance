@@ -1,0 +1,9 @@
+1. Quand on quitte le serveur, le client connecté est déconnecté.
+
+2. On est automatiquement déconnecté du serveur. 
+   L'option -z cherche à vérifier si le serveur existe, puis se coupe.
+
+3. La commande telnet ::1 8080 ne fonctionne pas, car on est en norme IPv4.
+
+4. Deux clients lancés simultanéments sont traités l'un après l'autre. Il est mis en attente.
+   Seul un certain nombre prédéfini de clients peut être mis en attente.
