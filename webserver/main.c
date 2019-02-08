@@ -20,14 +20,16 @@ int main (/*int argc , char **argv*/ ){
       /* On peut maintenant dialoguer avec le client */
 
       const char * message_bienvenue = "Bonjour, bienvenue sur mon serveur\n" ;
-
-      write(socket_client, message_bienvenue, strlen(message_bienvenue));
-
+      for (int i = 0; i < 10; i++) {
+	//sleep(1);
+      	write(socket_client, message_bienvenue, strlen(message_bienvenue));
+      }
       char buffer[BUFFER_LEN];
       int ret;
-      while( (ret = read(socket_client, buffer, BUFFER_LEN)) != -1 ){
+      while( (ret = read(socket_client, buffer, BUFFER_LEN)) > 0){
         write(socket_client, buffer, ret);
-        memset(buffer, 0, BUFFER_LEN);
       }
+      fprintf(stdout, "client deconnecte\n");
+      close(socket_client);
     }
 }
