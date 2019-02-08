@@ -1,3 +1,6 @@
-# systemeAvance
+# Système Avancé
 
-# authors alexandre duhamel, mickael spilmont, liza fretel
+### Authors :
+* Alexandre Duhamel
+* Mickael Spilmont
+* Liza Fretel
