@@ -5,7 +5,7 @@
 #include <unistd.h>
 
 int creer_serveur(int port) {
-  
+
     int socket_server;
     struct sockaddr_in socketAddr;
 
