@@ -5,6 +5,9 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <signal.h>
+#include <stdlib.h>
+
+
 
 #include "socket.h"
 
@@ -13,6 +16,7 @@ write */
 void initialiser_signaux() {
     if (signal(SIGPIPE, SIG_IGN) == SIG_ERR) {
         perror("Signal");
+		exit(1);
     }
 }
 
@@ -86,25 +90,27 @@ int main() {
     int socket_client;
     int pid;
 
+	
     while (1) {
         socket_client = accept(socket_server, NULL, NULL);
-
+ 		if (socket_client == -1) {
+                perror("accept");
+				exit(1);
+            }
         // On créer un nouveau processus
         pid = fork();
         // On est dans le processus fils
         if (pid == 0) {
 
-            if (socket_client == -1) {
-                perror("accept");
-            }
-
             // On appelle la fonction bienvenue
             bienvenueWithDelay(socket_client);
             // On appelle le perroquet
             perroquet(socket_client);
+			exit(1);
+
         // Une erreur c'est produite
         } else if (pid == -1) {
-            perror("Création du processus a échouée");
+            perror("echec de la creation du processus");
         // On est dans le processus père
         } else {
             // On ferme la socket_client
