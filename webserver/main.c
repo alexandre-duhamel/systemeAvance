@@ -10,9 +10,9 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-
-
 #include "socket.h"
+
+#define BUF 80
 
 //il faut gerer une infinite de fils morts (option = WNOHANG)
 void mon_handler(int signal) {
@@ -42,7 +42,7 @@ void initialiser_signaux() {
 paramètre, et retourne 0 si l'opération c'est passée, sinon -1*/
 int bienvenue(int socket_client) {
     int fileDescriptor = open("welcome.txt", O_RDONLY);
-    char buffer[80] = {0};
+ 	char buffer[80] = {0};
 
     // On vérifie que le fichier est correctement ouvert
     if (fileDescriptor == -1) {
@@ -56,6 +56,7 @@ int bienvenue(int socket_client) {
         // On vide le buffer
         memset(buffer, 0, 80);
     }
+	
     // On ferme le fichier
     close(fileDescriptor);
     return 0;
@@ -93,10 +94,22 @@ int bienvenueWithDelay(int socket_client) {
 /* Lit les messages du client et les lui renvoie.
 Prend en paramètre la socket_client et renvoie void */
 void perroquet(int socket_client) {
-    char buffer[80] = {0};
+	/*char buffer[80] = {0};
 
     while (read(socket_client, buffer, 79) > 0) {
         write(socket_client, buffer, strlen(buffer));
+        // On vide le buffer
+        memset(buffer, 0, 80);
+    }*/
+    char buffer[80] = {0};
+
+	FILE * a = fdopen ( socket_client , "w+" );
+	if (a == NULL) {
+		printf(" a est nul\n");
+	}
+    while (fgets(buffer, 80, a) != NULL) {
+		fprintf(a, buffer, strlen(buffer));
+        //write(socket_client, buffer, strlen(buffer));
         // On vide le buffer
         memset(buffer, 0, 80);
     }
@@ -120,7 +133,7 @@ int main() {
         pid = fork();
         // On est dans le processus fils
         if (pid == 0) {
-
+			
             // On appelle la fonction bienvenue
             bienvenueWithDelay(socket_client);
             // On appelle le perroquet
