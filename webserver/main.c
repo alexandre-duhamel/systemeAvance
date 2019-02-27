@@ -6,6 +6,9 @@
 #include <sys/socket.h>
 #include <signal.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 
 
 
@@ -84,13 +87,29 @@ void perroquet(int socket_client) {
     }
 }
 
+//il faut gerer une infinite de fils morts (option = WNOHANG)
+void mon_handler(int signal) {
+	printf("signal %d recu\n", signal);
+	while(waitpid(-1, NULL, WNOHANG) > 0) {}
+}
+
 int main() {
     initialiser_signaux();
     int socket_server = creer_serveur(8080);
     int socket_client;
-    int pid;
-
+    //int pid;
+	pid_t pid;
+	struct sigaction sa;
 	
+	sa.sa_handler = mon_handler;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = SA_RESTART;
+
+	if (sigaction(SIGCHLD, &sa, NULL) == -1) {
+		perror("erreur sigaction\n");
+		exit(1);
+	}	
+
     while (1) {
         socket_client = accept(socket_server, NULL, NULL);
  		if (socket_client == -1) {
