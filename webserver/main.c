@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <regex.h>
 
 #include "socket.h"
 
@@ -67,7 +68,7 @@ int bienvenue(int socket_client) {
 au client par un nombre de d'appels à la fonction write équivalent au nombre de 
 lignes.
 De plus elle intègre un délais d'une seconde */
-int bienvenueWithDelay(int socket_client) {
+int bienvenueWithDelay(const int socket_client) {
     sleep(1);
 
     FILE* fichier = fopen("welcome.txt", "r");
@@ -93,7 +94,21 @@ int bienvenueWithDelay(int socket_client) {
     return 0;
 }
 
-void lectureDeLaRequete(int socket_client) {
+
+//return 0 pour page existe pas dans l'arborescence locale, 1 pour page existe
+int trouvePage(const char * buffer) {
+	//printf(buffer);
+	//char* nomRessource = "";
+	//int reti = regcomp(buffer, "GET /* HTTP/1.1", 0);
+	//if (!reti) {
+	//	write(socket_client, "pas bon format", 14);
+	//	return 0;
+	//}
+	//int parse_ http_request ( const char * request_line , http_request * request );
+	return 1;
+}
+
+void lectureDeLaRequete(const int socket_client) {
 	char buffer[160] = {0};
 
 	FILE * a = fdopen ( socket_client , "w+" );
@@ -102,8 +117,13 @@ void lectureDeLaRequete(int socket_client) {
 	}
 	fgets(buffer, 160, a);
 	int egaux = strcmp("GET / HTTP/1.1\r\n", buffer);
-	if(egaux != 0){
+	/*if(egaux != 0){
 		char* response = "HTTP/1.1 400 Bad Request\r\nConnection: close\r\nContent-Length: 17\r\n\r\n400 Bad request\r\n";
+		write(socket_client, response, strlen(response));
+		exit(1);
+	}
+	else */if (! trouvePage(socket_client, buffer)) {
+		char* response = "HTTP/1.1 404 Not Found\r\nConnection: close\r\nContent-Length: 15\r\n\r\n404 Not Found\r\n";
 		write(socket_client, response, strlen(response));
 		exit(1);
 	}
