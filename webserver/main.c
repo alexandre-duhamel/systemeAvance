@@ -93,41 +93,24 @@ int bienvenueWithDelay(int socket_client) {
     return 0;
 }
 
-/* Lit les messages du client et les lui renvoie.
-Prend en paramètre la socket_client et renvoie void */
-void perroquet(int socket_client) {
-	/*char buffer[160] = {0};
-
-    while (read(socket_client, buffer, 79) > 0) {
-        write(socket_client, buffer, strlen(buffer));
-        // On vide le buffer
-        memset(buffer, 0, 160);
-    }*/
-    char buffer[160] = {0};
+void lectureDeLaRequete(int socket_client) {
+	char buffer[160] = {0};
 
 	FILE * a = fdopen ( socket_client , "w+" );
 	if (a == NULL) {
 		printf(" a est nul\n");
 	}
-    while (fgets(buffer, 160, a) != NULL) {
-		int egaux = strcmp("\n\r", buffer);
-		if (egaux == 0) {
-			continue;
-		}
-		egaux = strcmp("GET / HTTP/1.1\r\n", buffer);
-		if(egaux != 0){
-			char* response = "HTTP/1.1 400 Bad Request\r\nConnection: close\r\nContent-Length: 17\r\n400 Bad request\r\n";
-
-			write(socket_client, response, strlen(response));
-
-		}
-		fprintf(a, buffer, strlen(buffer));
-        //write(socket_client, buffer, strlen(buffer));
-		// 5.2.1 on affiche la ligne de la requête HTTP
-		printf(fgets(buffer, 160, a));
-        // On vide le buffer
-        memset(buffer, 0, 160);
-    }
+	fgets(buffer, 160, a);
+	int egaux = strcmp("GET / HTTP/1.1\r\n", buffer);
+	if(egaux != 0){
+		char* response = "HTTP/1.1 400 Bad Request\r\nConnection: close\r\nContent-Length: 17\r\n\r\n400 Bad request\r\n";
+		write(socket_client, response, strlen(response));
+		exit(1);
+	}
+	else {
+		char* response = "HTTP/1.1 200 OK\r\nConnection: close\r\nContent-Length: 8\r\n\r\n200 OK\r\n";
+		write(socket_client, response, strlen(response));
+	}
 }
 
 int main() {
@@ -148,11 +131,11 @@ int main() {
         pid = fork();
         // On est dans le processus fils
         if (pid == 0) {
-			
             // On appelle la fonction bienvenue
-            bienvenueWithDelay(socket_client);
-            // On appelle le perroquet
-            perroquet(socket_client);
+            //bienvenueWithDelay(socket_client);
+			
+			
+			lectureDeLaRequete(socket_client);
 			exit(1);
 
         // Une erreur c'est produite
